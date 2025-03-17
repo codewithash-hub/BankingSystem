@@ -1,9 +1,11 @@
+from sqlite3 import IntegrityError
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from flask_bcrypt import Bcrypt
 from flask_migrate import Migrate
 from datetime import datetime
+from models import User, db
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///banking.db'
@@ -47,17 +49,33 @@ def home():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
-        username = request.form['username']
-        email = request.form['email']
-        password = request.form['password']
-        hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
+        username = request.form.get('username')
+        email = request.form.get('email')
+        password = request.form.get('password')
 
-        new_user = User(username=username, email=email, password=hashed_password)
-        db.session.add(new_user)
-        db.session.commit()
+        # Check if username or email already exists
+        if User.query.filter_by(username=username).first():
+            flash("Username already taken. Please choose another one.", "danger")
+            return redirect(url_for('register'))
 
-        flash("Registration successful! Please log in.", "success")
-        return redirect(url_for('login'))
+        if User.query.filter_by(email=email).first():
+            flash("Email is already registered. Please use a different email.", "danger")
+            return redirect(url_for('register'))
+
+        try:
+            # Hash the password and create a new user
+            hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
+            new_user = User(username=username, email=email, password=hashed_password)
+
+            db.session.add(new_user)
+            db.session.commit()
+
+            flash("Registration successful! Please log in.", "success")
+            return redirect(url_for('login'))
+
+        except IntegrityError:
+            db.session.rollback()  # Rollback changes if an error occurs
+            flash("An error occurred during registration. Please try again.", "danger")
 
     return render_template('register.html')
 
