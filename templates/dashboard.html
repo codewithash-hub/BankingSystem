@@ -36,7 +36,9 @@
         </div>
 
         <!-- Transfer Money -->
+
         <form action="{{ url_for('transfer') }}" method="POST" class="mt-4">
+            <h2>Tranfer Money</h2>
             <input type="text" name="recipient" class="form-control mb-2" placeholder="Recipient Username" required>
             <input type="number" name="amount" class="form-control mb-2" placeholder="Transfer Amount" required>
             <button type="submit" class="btn btn-primary w-100">Transfer</button>
