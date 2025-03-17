@@ -83,7 +83,6 @@ def login():
 @login_required
 def dashboard():
     user = User.query.get(current_user.id)
-
     return render_template('dashboard.html', user=user)
 
 # Function to logout
@@ -119,12 +118,24 @@ def withdraw():
         flash("Insufficient funds!", "danger")
     else:
         current_user.balance -= amount
-        transaction = Transaction(user_id=current_user.id, amount=amount, transaction_type='deposit')
+        transaction = Transaction(
+            user_id=current_user.id, 
+            amount=-amount, 
+            transaction_type='withdraw',
+            recipient_id=current_user.id
+        )
         db.session.add(transaction)
         db.session.commit()
         flash("Withdrawal successful!", "success")
 
     return redirect(url_for('dashboard'))
+
+# Function to show transaction
+@app.route('/transactions')
+@login_required
+def transactions():
+    user_transactions = Transaction.query.filter_by(user_id=current_user.id).order_by(Transaction.timestamp.desc()).all()
+    return render_template('transactions.html', transactions=user_transactions)
 
 # Function to handle transfer
 @app.route('/transfer', methods=['POST'])
@@ -163,7 +174,7 @@ def transfer():
     recipient_transaction = Transaction(
         user_id=recipient.id, 
         amount=amount, 
-        transaction_type='transfer', 
+        transaction_type='received', 
         recipient_id=current_user.id
     )
 

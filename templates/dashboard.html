@@ -30,83 +30,11 @@
         </div>
 
         <!-- Transaction History Section -->
-        <!-- <div class="card mt-4 shadow-sm">
-            <div class="card-header">
-                <h4>Transaction History</h4>
-            </div>
-            <div class="card-body">
-                {% if user.transactions %}
-                <table class="table table-striped text-center">
-                    <thead>
-                        <tr>
-                            <th>Type</th>
-                            <th>Amount</th>
-                            <th>Date</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for transaction in user.transactions %}
-                        <tr>
-                            <td>
-                                {% if transaction.transaction_type == 'deposit' %}
-                                    <span class="text-success">Deposit</span>
-                                {% else %}
-                                    <span class="text-danger">Withdraw</span>
-                                {% endif %}
-                            </td>
-                            <td>R {{ transaction.amount }}</td>
-                            <td>{{ transaction.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-                {% else %}
-                <p class="text-center text-muted">No recent transactions.</p>
-                {% endif %}
-            </div>
-        </div> -->
 
-        <table class="table table-striped text-center mt-4">
-            <thead>
-                <tr>
-                    <th>Type</th>
-                    <th>Amount</th>
-                    <th>Details</th>
-                    <th>Date</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for transaction in transactions %}
-                <tr>
-                    <td>
-                        {% if transaction.transaction_type == 'deposit' %}
-                            <span class="text-success">Deposit</span>
-                        {% elif transaction.transaction_type == 'withdraw' %}
-                            <span class="text-danger">Withdraw</span>
-                        {% elif transaction.transaction_type == 'transfer' and transaction.amount < 0 %}
-                            <span class="text-warning">Sent</span>
-                        {% elif transaction.transaction_type == 'transfer' and transaction.amount > 0 %}
-                            <span class="text-info">Received</span>
-                        {% endif %}
-                    </td>
-                    <td>R {{ transaction.amount | abs }}</td>
-                    <td>
-                        {% if transaction.transaction_type == 'transfer' %}
-                            {% if transaction.amount < 0 %}
-                                Sent to {{ transaction.recipient.username }}
-                            {% else %}
-                                Received from {{ transaction.user.username }}
-                            {% endif %}
-                        {% else %}
-                            ---
-                        {% endif %}
-                    </td>
-                    <td>{{ transaction.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        
+        <div  class="card mt-4 shadow-sm">
+            <a href="{{ url_for('transactions') }}" class="btn btn-info">View Statement</a>
+        </div>
+
         <!-- Transfer Money -->
         <form action="{{ url_for('transfer') }}" method="POST" class="mt-4">
             <input type="text" name="recipient" class="form-control mb-2" placeholder="Recipient Username" required>

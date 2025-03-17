@@ -1,36 +1,60 @@
-{% extends 'index.html' %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 
-{% block content %}
-<div class="container mt-4">
-    <h3 class="text-center">Transaction History</h3>
-
-    {% if transactions %}
-    <table class="table table-striped mt-3">
-        <thead>
-            <tr>
-                <th>Date</th>
-                <th>Type</th>
-                <th>Amount</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for transaction in transactions %}
-            <tr>
-                <td>{{ transaction.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
-                <td>
-                    {% if transaction.transaction_type == 'deposit' %}
-                        <span class="text-success">Deposit</span>
-                    {% else %}
-                        <span class="text-danger">Withdraw</span>
-                    {% endif %}
-                </td>
-                <td>R {{ transaction.amount }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    {% else %}
-    <p class="text-center mt-3">No transactions found.</p>
-    {% endif %}
-</div>
-{% endblock %}
+</head>
+<body>
+    <div class="container card mt-4 shadow-sm w-100">
+        {% block content %}
+        <div class="card mt-4 shadow-sm">
+            <div class="card-header">
+                <h4>Transaction History</h4>
+                <a href="{{ url_for('dashboard') }}" class="btn btn-info">Dashboard</a>
+            </div>
+            <div class="card-body">
+                {% if transactions %}
+                <table class="table table-striped text-center">
+                    <thead>
+                        <tr>
+                            <th>Type</th>
+                            <th>Amount</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for transaction in transactions %}
+                        <tr>
+                            <td>
+                                {% if transaction.transaction_type == 'deposit' %}
+                                    <span class="text-success">Deposit</span>
+                                {% elif transaction.transaction_type == 'transfer'%}
+                                    <span class="text-danger">Transfer</span>
+                                {% elif transaction.transaction_type == 'received'%}
+                                    <span class="text-success">Received</span>
+                                {% else %}
+                                    <span class="text-danger">Withdraw</span>
+                                {% endif %}
+                            </td>
+                            <td>R {{ transaction.amount }}</td>
+                            <td>{{ transaction.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <p class="text-center text-muted">No recent transactions.</p>
+                {% endif %}
+            </div>
+        </div>
+        <div  class="card mt-4 shadow-sm">
+            <a href="{{ url_for('dashboard') }}" class="btn btn-info">Dashboard</a>
+        </div>
+        {% endblock %}
+    </div> 
+</body>
+</html>
