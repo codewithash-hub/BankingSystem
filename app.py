@@ -23,8 +23,6 @@ class User(db.Model, UserMixin):
     password = db.Column(db.String(256), nullable=False)
     balance = db.Column(db.Float, default=0.0)
 
-
-
 class Transaction(db.Model):
     __tablename__ = 'transaction'
     id = db.Column(db.Integer, primary_key=True)
@@ -132,8 +130,8 @@ def withdraw():
 @app.route('/transfer', methods=['POST'])
 @login_required
 def transfer():
-    recipient_username = request.form.get('recipient')  # Get recipient username from form
-    amount = float(request.form.get('amount'))  # Get transfer amount
+    recipient_username = request.form.get('recipient')
+    amount = float(request.form.get('amount'))
 
     recipient = User.query.filter_by(username=recipient_username).first()
 
